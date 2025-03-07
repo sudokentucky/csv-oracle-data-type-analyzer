@@ -27,7 +27,7 @@ Una herramienta sencilla en Python para analizar archivos CSV y sugerir el tipo 
 1. **Clona el repositorio:**
 
    ```bash
-   git clone <https://github.com/tu-usuario/csv-oracle-data-type-analyzer.git>
+   git clone <https://github.com/sudokentucky/csv-oracle-data-type-analyzer.git>
    cd csv-oracle-data-type-analyzer
     ```
 
