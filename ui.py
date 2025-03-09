@@ -57,27 +57,42 @@ class CsvAnalyzerUI:
 
         col_name = self.column_entry.get().strip()
         try:
+            result_text = ""
             if col_name:
-                max_len, dtype, oracle_type, total, non_empty = analyze_csv_column(file_path, col_name)
-                result_text = f"Columna: {col_name}\n"
-                result_text += f"  Longitud máxima: {max_len}\n"
-                result_text += f"  Tipo de datos (mayoría): {dtype}\n"
-                result_text += f"  Sugerencia de dato: {oracle_type}\n"
+                result = analyze_csv_column(file_path, col_name)
+
+                result_text += f"Columna: {result['column_name']}\n"
+                result_text += f"  Longitud máxima: {result['max_length']}\n"
+                result_text += f"  Tipo de datos (mayoría): {result['final_type']}\n"
+                result_text += f"  Sugerencia de tipo Oracle: {result['oracle_type']}\n"
+                result_text += f"  Total de registros: {result['total_values']}\n"
+                result_text += f"  Registros no vacíos: {result['non_empty_values']}\n"
+                result_text += f"  % de registros no vacíos: {result['non_empty_ratio']}%\n"
+                result_text += f"  % de registros vacíos: {result['empty_ratio']}%\n"
+                result_text += f"  ¿Sugerir NOT NULL?: {'Sí' if result['sugerir_not_null'] else 'No'}\n"
             else:
                 results = analyze_all_columns(file_path)
-                result_text = ""
-                for col, (max_len, dtype, oracle_type, total, non_empty) in results.items():
-                    result_text += f"Columna: {col}\n"
-                    result_text += f"  Longitud máxima: {max_len}\n"
-                    result_text += f"  Tipo de datos (mayoría): {dtype}\n"
-                    result_text += f"  Sugerencia de dato: {oracle_type}\n\n"
-            
+
+                for col, result in results.items():
+                    result_text += f"Columna: {result['column_name']}\n"
+                    result_text += f"  Longitud máxima: {result['max_length']}\n"
+                    result_text += f"  Tipo de datos (mayoría): {result['final_type']}\n"
+                    result_text += f"  Sugerencia de tipo Oracle: {result['oracle_type']}\n"
+                    result_text += f"  Total de registros: {result['total_values']}\n"
+                    result_text += f"  Registros no vacíos: {result['non_empty_values']}\n"
+                    result_text += f"  % de registros no vacíos: {result['non_empty_ratio']}%\n"
+                    result_text += f"  % de registros vacíos: {result['empty_ratio']}%\n"
+                    result_text += f"  ¿Sugerir NOT NULL?: {'Sí' if result['sugerir_not_null'] else 'No'}\n\n"
+
+            # Mostrar resultados en una ventana secundaria
             result_window = tk.Toplevel(self.root)
             result_window.title("Resultados del análisis")
-            text_widget = tk.Text(result_window, wrap="word", width=80, height=20)
+            text_widget = tk.Text(result_window, wrap="word", width=100, height=30)
             text_widget.pack(expand=True, fill="both")
             text_widget.insert("1.0", result_text)
             text_widget.config(state="disabled")
             self._center_window(result_window)
+
         except Exception as e:
             messagebox.showerror("Error", f"Error al analizar el archivo:\n{str(e)}")
+
